@@ -11,7 +11,6 @@ urlpatterns = [
 
     path('transaction/', TransactionListView.as_view(), name='transactions'),
     path('transaction/create/', TransactionCreateView.as_view(), name='transaction-create'),
-    path('transaction/<int:pk>/', TransactionDetailView.as_view(), name='transaction-update'),
 
     path('request/', TransactionRequestListView.as_view(), name='requests'),
     path('request/create/', TransactionRequestCreateView.as_view(), name='request-create'),
