@@ -17,12 +17,16 @@ INSTALLED_APPS = [
 
     # STARTER APPS
     'crispy_forms',
+    "crispy_bootstrap5",
 
     # CUSTOM APPS
     'register.apps.RegisterConfig',
     'payapp.apps.PayappConfig',
 ]
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -34,7 +38,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'webapps2023.urls'
-
+AUTH_USER_MODEL = 'register.User'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
