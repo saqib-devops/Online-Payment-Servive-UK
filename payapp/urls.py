@@ -2,7 +2,8 @@ from django.urls import path
 
 from .views import (
     TransactionListView, TransactionDetailView,  TransactionCreateView,
-    TransactionRequestListView, TransactionRequestCreateView, TransactionRequestUpdateView, TransactionRequestDetailView
+    TransactionRequestListView, TransactionRequestCreateView, TransactionRequestUpdateView,
+    TransactionRequestDetailView
 )
 
 

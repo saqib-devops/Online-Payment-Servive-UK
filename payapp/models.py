@@ -7,7 +7,7 @@ class Transaction(models.Model):
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_by')
     amount = models.FloatField()
 
-    is_completed = models.FloatField()
+    is_completed = models.BooleanField(default=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
