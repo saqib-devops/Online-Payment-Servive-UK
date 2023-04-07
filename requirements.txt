@@ -1,0 +1,6 @@
+pillow
+markdown
+
+django
+django-crispy-forms
+django-browser-reload
