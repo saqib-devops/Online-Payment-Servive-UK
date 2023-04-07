@@ -10,7 +10,7 @@ urlpatterns = [
 # your apps urls
 urlpatterns += [
     path('', include('register.urls', namespace='register')),
-    path('pay-app/', include('payapp.urls', namespace='payapp')),
+    path('payapp/', include('payapp.urls', namespace='payapp')),
 ]
 
 if ENVIRONMENT != 'server':
