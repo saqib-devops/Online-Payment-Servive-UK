@@ -1,7 +1,5 @@
 # Online-Payment-Servive-UK
-Assignment
-An Online Payment Service
-1. Introduction
+# Introduction
 This assignment is about the design and implementation of a web-based, multi-user
 payment service using the Django framework. The system is a much-simplified
 version of PayPal. Through a web interface, users should be able to send money to
@@ -11,87 +9,103 @@ identifier), request money from other registered users and manage their own acco
 access all user accounts and transactions.
 After successfully completing the assignment, you will have demonstrated that you
 can:
-• design and implement user interfaces using Templates
-• design and implement business logic using Views
-• design and implement data access using Models
-• design and implement a secure multi-user system
-2. Project Description
+
+<ul>
+<li>design and implement user interfaces using Templates</li>
+<li>design and implement business logic using Views</li>
+<li>design and implement data access using Models</li>
+<li>design and implement a secure multi-user system</li>
+</ul>
+
+# 2. Project Description
+
 Online payment services, such as PayPal, allow users to connect their online accounts
 to their bank accounts, debit and credit cards. In such systems, users can usually
 transfer money from their bank accounts to the online account, receive payments to
 this account from other users, push money from the online account to their bank
-accounts, among others.
+accounts, among others.<br>
 For simplicity, we will assume in this project that all registered users start with a
-specific amount of money (e.g., £1000) and no connections to bank accounts exist.
-Note: This is pretended money, and no connection to real sources of money should exist.
+specific amount of money (e.g., £1000) and no connections to bank accounts exist.<br>
+Note: This is pretended money, and no connection to real sources of money should exist.<br>
 To register, a user must provide a username, a first and last name, an email address
 and a password. Each user has a single online account whose currency is selected
 upon registration. Users can choose to have their account in GB Pounds, US dollars
 or Euros. In any case, the system should make the appropriate conversion to assign
 the right initial amount of money (e.g., if the baseline is £1000, then the initial amount
-should be 1000 * GBP_to_USD_rate US dollars).
+should be 1000 * GBP_to_USD_rate US dollars).<br>
 A user can instruct the system to make a direct payment to another user. If this
 request is accepted (i.e., the recipient of the payment exists and there are enough
 funds), money is transferred (within a single Django transaction) to the recipient
 immediately. Users should be able to check for notifications regarding payments in
-their accounts.
+their accounts.<br>
 A user can instruct the system to request payment from some other user. A user
 should be able to check about such notifications for payment requests. They can
-reject the request or, in response to it, make a payment to the requesting user.
+reject the request or, in response to it, make a payment to the requesting user.<br>
 Users can access all their transactions, that is, sent and received payments and
 requests for payments as well as their current account balance.
-An administrator can see all user accounts and all transactions.
+An administrator can see all user accounts and all transactions.<br>
 A separate RESTful web service must implement currency conversion. The exchange
 rates will be statically assigned (hard-coded) in the RESTful service source code.
-3. Penalties
+
+# 3. Penalties
 You will receive 0 marks for your submission if it does not respect the following
 THREE requirements.
 1. You should use these naming conventions:
 database: db.webapps
 context path: /webapps2023
 2. The submitted IntelliJ Django project should follow this structure:
-webapps2023
-│ db.webapps
-│ manage.py
-│
-├───templates
-│
-├───register
-│ │ admin.py
-│ │ apps.py
-│ │ models.py
-│ │ tests.py
-│ │ views.py
-│ │ __init__.py
-│ │
-│ └───migrations
-│ __init__.py
-│
-├───webapps2023
-│ asgi.py
-│ settings.py
-│ urls.py
-│ wsgi.py
-│ __init__.py
-│
-├───payapp
-│ ...
+<br>
+webapps2023<br>
+│ db.webapps<br>
+│ manage.py<br>
+│<br>
+├───templates<br>
+│<br>
+├───register<br>
+│ │ admin.py<br>
+│ │ apps.py<br>
+│ │ models.py<br>
+│ │ tests.py<br>
+│ │ views.py<br>
+│ │ __init__.py<br>
+│ │<br>
+│ └───migrations<br>
+│ __init__.py<br>
+│<br>
+├───webapps2023<br>
+│ asgi.py<br>
+│ settings.py<br>
+│ urls.py<br>
+│ wsgi.py<br>
+│ __init__.py<br>
+│<br>
+├───payapp<br>
+│ ...<br>
 3. Your IntelliJ Django project should compile without any errors.
 • A penalty of 4% will be applied if the source code is not well-formatted
 and self-documentingLinks to an external site. (or well-documented).
-4. System Architecture and Mark Allocation
-4.1. The Presentation Layer (20%)
+# 4. System Architecture and Mark Allocation
+<h2> 4.1. The Presentation Layer (20%)</h2>
 The presentation layer consists of a set of templates through which users and
 administrators interact with the web application.
 Users should be able to:
-• View all their transactions
-• Make direct payments to other registered users
-• Request payments from registered users
+<ul>
+<li> View all their transactions</li>
+
+<li> Make direct payments to other registered users</li>
+
+<li> Request payments from registered users</li>
+</ul>
+
+
+
 Administrators should be able to see:
+
 • user accounts
+
 • all payment transactions
 and register new administrators
-4.1.1 Mark Allocation
+<h2> 4.1.1 Mark Allocation</h2>
 • 10% - Full marks will be given if all required templates are written and
 correctly connected with view functions in a way that makes sense even if
 no other functionality is implemented at the business logic and data access
@@ -189,8 +203,7 @@ service, etc. These screenshots should show all the user
 interfaces and any related data in the database.
 o or a short walkthrough video/demo that shows all the working
 parts.
-5. (Optional) Deployment on the Cloud (7%
-bonus)
+# 5. (Optional) Deployment on the Cloud (7% bonus)
 You can optionally deploy your application on the Cloud and get an extra 7%. The
 maximum mark you can get for this assignment is 100% (i.e. you will still get 100%,
 and not 107%, even if your submission is perfect and you deployed your application
@@ -205,7 +218,7 @@ Academy, where you will get access to the required AWS resources. Sussex is an
 active member of AWS Academy, which means you will be given some free credits to
 use AWS. These credits will be enough to deploy this project. Some tutorials on using
 AWS will be provided in the lab classes later in this module.
-6. Comments about marking
+# 6. Comments about marking
 The coursework requires you to bring together several independent pieces of
 functionality. It is highly recommended that you consider the service design BEFORE
 you start implementation. Consider which parts are necessary to implement the core
@@ -221,7 +234,7 @@ means that if, for example, the requesting money functionality is not implemente
 (nor the templates and any potentially required persistence data), marks will be
 removed from all three layers.
 Security is mostly independent and orthogonal to the rest of the system.
-7. Submission
+# 7. Submission
 The assignment submission will be through the separate UG and PGR Canvas sites.
 Your submission should be a zip file containing:
 • a zipped copy of the IntelliJ Django project containing well-formatted
@@ -233,7 +246,7 @@ mark, as the tutor will not be able to assess your programming effort. The submi
 source code must be part of an IntelliJ Django project that can be compiled and
 deployed locally on any computer. Projects implemented using other technologies
 (e.g., Java EE, Payara, MySQL Server, PHP, etc.) will not get any marks.
-8. Plagiarism and Collusion
+# 8. Plagiarism and Collusion
 The coursework you submit is supposed to have been produced by you and you
 alone. This means that you should not:
 • work together with anyone else on this assignment
