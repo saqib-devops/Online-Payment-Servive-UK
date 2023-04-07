@@ -1,12 +1,11 @@
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.views.generic import ListView, DetailView
 
 from payapp.models import Transaction, TransactionRequest
-
+from register.models import User
 
 """ TRANSACTION VIEWS"""
 
