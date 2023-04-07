@@ -1,3 +1,4 @@
+from crispy_forms.helper import FormHelper
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
@@ -11,6 +12,9 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ['first_name', 'last_name', 'email', 'username', 'currency_type']
 
+    def __init__(self, *args, **kwargs):
+        super(SignUpForm, self).__init__(*args, **kwargs)
+        self.fields['currency_type'].widget.attrs.update({"class": "form-control"})
 
 
 def signup(request):
@@ -21,7 +25,7 @@ def signup(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
-            return redirect('home')
+            return redirect("home")
     else:
         form = SignUpForm()
     return render(request, 'register/signup.html', {'form': form})
