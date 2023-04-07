@@ -14,8 +14,6 @@ class User(AbstractUser):
     email = models.EmailField(unique=True, max_length=200)
     total_amount = models.FloatField(default=1000)
     sent_amount = models.FloatField(default=0)
-    received_amount = models.FloatField(default=0)
-    remaining_amount = models.FloatField(default=1000)
     currency_type = models.CharField(max_length=20, choices=CURRENCY_TYPE,default=1)
 
     REQUIRED_FIELDS = ['username',]

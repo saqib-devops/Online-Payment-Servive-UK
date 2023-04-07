@@ -32,7 +32,7 @@ class UserAdmin(admin.ModelAdmin):
         }),
         ('Amounts', {
             'fields': (
-                'total_amount', 'remaining_amount', 'sent_amount','received_amount','currency_type'
+                'total_amount','currency_type'
             ),
         }),
         ('Permissions', {
