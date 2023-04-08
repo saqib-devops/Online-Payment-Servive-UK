@@ -1,8 +1,9 @@
 from register.views import signup
-
-app_name = 'register'
 from django.contrib.auth import views as auth_views
 from django.urls import path
+
+
+app_name = 'register'
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='register/login.html'), name='login'),

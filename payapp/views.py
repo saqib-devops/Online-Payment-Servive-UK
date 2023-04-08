@@ -1,15 +1,29 @@
+import datetime
+
 from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.decorators import method_decorator
 from django.views import View
+from rest_framework.response import Response
+
 from django.views.generic import ListView, DetailView, TemplateView
 
 from payapp.models import Transaction, TransactionRequest
+from payapp.utils import convert_currency, convert_to_float
 from register.models import User
+from rest_framework.views import APIView
+from rest_framework.status import (
+    HTTP_200_OK, HTTP_400_BAD_REQUEST
+)
+from register.models import User
+
 
 """ TRANSACTION VIEWS"""
 
 
+
+@method_decorator(login_required, name='dispatch')
 class DashboardTemplateView(TemplateView):
     template_name = 'payapp/dashboard.html'
 
@@ -22,6 +36,7 @@ class DashboardTemplateView(TemplateView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionListView(ListView):
     template_name = 'payapp/transactions.html'
     context_object_name = 'objects'
@@ -30,6 +45,7 @@ class TransactionListView(ListView):
         return Transaction.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionDetailView(DetailView):
 
     def get_object(self, queryset=None):
@@ -39,6 +55,7 @@ class TransactionDetailView(DetailView):
         )
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionCreateView(View):
     template_name = 'payapp/transaction_create.html'
 
@@ -89,7 +106,7 @@ class TransactionCreateView(View):
 
 """ TRANSACTION REQUEST VIEWS"""
 
-
+@method_decorator(login_required, name='dispatch')
 class TransactionRequestListView(ListView):
     template_name = 'payapp/request_transaction_list.html'
 
@@ -98,6 +115,7 @@ class TransactionRequestListView(ListView):
         return TransactionRequest.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionRequestDetailView(DetailView):
 
     def get_object(self, queryset=None):
@@ -107,6 +125,7 @@ class TransactionRequestDetailView(DetailView):
         )
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionRequestCreateView(View):
     template_name = 'payapp/request_transaction_create.html'
 
@@ -142,6 +161,7 @@ class TransactionRequestCreateView(View):
         return redirect('payapp:requests')
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionRequestUpdateView(View):
     template_name = ''
 
@@ -182,6 +202,7 @@ class TransactionRequestUpdateView(View):
 
         # UPDATE: request
         transaction_request.status = 'accepted'
+        transaction_request.checked_on = datetime.datetime.now()
         transaction_request.save()
 
         # UPDATE: sender and receiver amounts
@@ -193,3 +214,45 @@ class TransactionRequestUpdateView(View):
         # SUCCESS: message and redirect
         messages.success(request, "Request approved and transaction performed successfully")
         return redirect('payapp:requests')
+
+
+""" API """
+
+
+@method_decorator(login_required, name='dispatch')
+class CurrencyConversionAPI(APIView):
+    def get(self, request, currency1, currency2, amount):
+
+        # IF: currencies not supported
+        if currency1 not in ['USD', 'EUR', 'GBP'] or currency2 not in ['USD', 'EUR', 'GBP']:
+            return Response(
+                status=HTTP_400_BAD_REQUEST, data={
+                    'error': 'Only USD, EUR and GBP are supported'
+                }
+            )
+
+        float_amount = convert_to_float(amount)
+
+        # IF: not supported to convert into int or float
+        if not float_amount:
+            return Response(
+                status=HTTP_400_BAD_REQUEST, data={
+                    'error': 'Amount must be number (integer, float)'
+                }
+            )
+
+        # IF: amount is less or equal to 0
+        if float_amount <= 0:
+            return Response(
+                status=HTTP_200_OK, data={
+                    'error': 'Amount must be numeric and greater than 0'
+                }
+            )
+
+        # SUCCESS: everything is fine here
+        converted_amount = convert_currency(currency1, currency2, float_amount)
+        return Response(
+            status=HTTP_200_OK, data={
+                'amount': converted_amount
+            }
+        )
