@@ -1,9 +1,9 @@
 def convert_currency(currency1, currency2, amount):
     # Define conversion rates
     conversion_rates = {
-        'USD': {'EUR': 0.83, 'GBP': 0.72},
-        'EUR': {'USD': 1.21, 'GBP': 0.87},
-        'GBP': {'USD': 1.39, 'EUR': 1.15}
+        'USD': {'EURO': 0.83, 'GBP': 0.72},
+        'EURO': {'USD': 1.21, 'GBP': 0.87},
+        'GBP': {'USD': 1.39, 'EURO': 1.15}
     }
 
     # Check if both currencies are valid and conversion rate is available
