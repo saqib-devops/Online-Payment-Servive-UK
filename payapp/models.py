@@ -30,7 +30,7 @@ class TransactionRequest(models.Model):
 
     status = models.CharField(max_length=10, choices=STATUS_CHOICE, default='pending')
     created_on = models.DateTimeField(auto_now_add=True)
-    checked_on = models.DateTimeField()
+    checked_on = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Transactions Requests'

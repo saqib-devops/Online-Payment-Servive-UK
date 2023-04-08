@@ -1,7 +1,11 @@
+import datetime
+
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import ListView, DetailView
 from rest_framework.response import Response
@@ -17,12 +21,14 @@ from rest_framework.status import (
 """ TRANSACTION VIEWS"""
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionListView(ListView):
 
     def get_queryset(self):
         return Transaction.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionDetailView(DetailView):
 
     def get_object(self, queryset=None):
@@ -32,6 +38,7 @@ class TransactionDetailView(DetailView):
         )
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionCreateView(View):
     template_name = ''
 
@@ -82,13 +89,14 @@ class TransactionCreateView(View):
 
 """ TRANSACTION REQUEST VIEWS"""
 
-
+@method_decorator(login_required, name='dispatch')
 class TransactionRequestListView(ListView):
 
     def get_queryset(self):
         return TransactionRequest.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionRequestDetailView(DetailView):
 
     def get_object(self, queryset=None):
@@ -98,6 +106,7 @@ class TransactionRequestDetailView(DetailView):
         )
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionRequestCreateView(View):
     template_name = ''
 
@@ -133,6 +142,7 @@ class TransactionRequestCreateView(View):
         return redirect('payapp:requests')
 
 
+@method_decorator(login_required, name='dispatch')
 class TransactionRequestUpdateView(View):
     template_name = ''
 
@@ -173,6 +183,7 @@ class TransactionRequestUpdateView(View):
 
         # UPDATE: request
         transaction_request.status = 'accepted'
+        transaction_request.checked_on = datetime.datetime.now()
         transaction_request.save()
 
         # UPDATE: sender and receiver amounts
@@ -189,6 +200,7 @@ class TransactionRequestUpdateView(View):
 """ API """
 
 
+@method_decorator(login_required, name='dispatch')
 class CurrencyConversionAPI(APIView):
     def get(self, request, currency1, currency2, amount):
 
