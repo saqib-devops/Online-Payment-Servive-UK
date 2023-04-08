@@ -3,8 +3,9 @@ from django.urls import path
 from .views import (
     TransactionListView, TransactionCreateView,
     TransactionRequestListView, TransactionRequestCreateView, TransactionRequestUpdateView,
-    CurrencyConversionAPI,
-     DashboardTemplateView
+
+    CurrencyConversionAPI, DashboardTemplateView
+
 )
 
 

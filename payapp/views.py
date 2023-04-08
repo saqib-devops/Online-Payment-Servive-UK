@@ -19,8 +19,6 @@ from rest_framework.status import (
 )
 from register.models import User
 
-""" TRANSACTION VIEWS"""
-
 
 @method_decorator(login_required, name='dispatch')
 class DashboardTemplateView(TemplateView):
@@ -33,6 +31,9 @@ class DashboardTemplateView(TemplateView):
         context['total_transactions'] = transactions.count()
         context['total_amount'] = User.objects.get(id=self.request.user.id)
         return context
+
+
+""" TRANSACTION VIEWS"""
 
 
 @method_decorator(login_required, name='dispatch')
@@ -165,7 +166,6 @@ class TransactionRequestCreateView(View):
 @method_decorator(login_required, name='dispatch')
 class TransactionRequestUpdateView(View):
 
-
     def get(self, request, pk):
 
         # IF: no status parameter
@@ -178,13 +178,16 @@ class TransactionRequestUpdateView(View):
         sender = transaction_request.receiver
         receiver = transaction_request.sender
         amount = transaction_request.amount
-        if status == "cancel":
-            transaction_request.status = "cancelled"
-            transaction_request.save()
-            return redirect('payapp:requests')
+        
         # IF: wrong parameter
         if status not in ['approved', 'cancel']:
             messages.warning(request, "Some parameters are missing")
+            return redirect('payapp:requests')
+            
+        if status == "cancel":
+            transaction_request.status = "cancelled"
+            transaction_request.checked_on = datetime.datetime.now()
+            transaction_request.save()
             return redirect('payapp:requests')
 
         # IF: sender amount is less
@@ -196,10 +199,11 @@ class TransactionRequestUpdateView(View):
         Transaction.objects.create(
             sender=sender, receiver=receiver, amount=amount
         )
-        # UPDATE: request
-        transaction_request.status = 'accepted'
-        transaction_request.checked_on = datetime.datetime.now()
-        transaction_request.save()
+
+        # ADD: transaction
+        Transaction.objects.create(
+             sender=sender, receiver=receiver, amount=amount
+        )
 
         # UPDATE: sender and receiver amounts
         sender.total_amount -= amount
@@ -207,8 +211,15 @@ class TransactionRequestUpdateView(View):
         receiver.total_amount += amount
         receiver.save()
 
-        # SUCCESS: message and redirect
+        transaction_request.status = 'accepted'
         messages.success(request, "Request approved and transaction performed successfully")
+            
+        # UPDATE: request
+        transaction_request.checked_on = datetime.datetime.now()
+        transaction_request.save()
+
+        # SUCCESS: message and redirect
+
         return redirect('payapp:requests')
 
 
