@@ -1,8 +1,6 @@
 import datetime
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
@@ -17,6 +15,8 @@ from rest_framework.views import APIView
 from rest_framework.status import (
     HTTP_200_OK, HTTP_400_BAD_REQUEST
 )
+from register.models import User
+
 
 """ TRANSACTION VIEWS"""
 
