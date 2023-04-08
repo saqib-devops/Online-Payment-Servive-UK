@@ -94,7 +94,7 @@
             <div class="collapse navbar-collapse" id="topnav-menu-content">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link dropdown-toggle arrow-none" href="">
+                        <a class="nav-link dropdown-toggle arrow-none" href="{% url 'payapp:dashboard' %}">
                             <i class="bx bx-home-circle mr-2"></i>Dashboard
                         </a>
                     </li>
@@ -108,8 +108,8 @@
                             <div class="arrow-down"></div>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="topnav-pages">
-                            <a href="" class="dropdown-item">Transactions</a>
-                            <a href="" class="dropdown-item">Transaction Create</a>
+                            <a href="{% url 'payapp:transactions' %}" class="dropdown-item">Transactions</a>
+                            <a href="{% url 'payapp:transaction-create' %}" class="dropdown-item">Transaction Create</a>
                         </div>
                     </li>
                 </ul>

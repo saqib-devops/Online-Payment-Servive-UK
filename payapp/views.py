@@ -23,7 +23,7 @@ class DashboardTemplateView(TemplateView):
 
 
 class TransactionListView(ListView):
-    template_name = 'payapp/dashboard.html'
+    template_name = 'payapp/transactions.html'
     context_object_name = 'objects'
 
     def get_queryset(self):
@@ -40,7 +40,7 @@ class TransactionDetailView(DetailView):
 
 
 class TransactionCreateView(View):
-    template_name = ''
+    template_name = 'payapp/transaction_create.html'
 
     def get(self, request):
         return render(request, self.template_name)
