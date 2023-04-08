@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table align-middle table-nowrap table-check">
+                <thead class="table-light">
+                <tr>
+                    <th class="align-middle" style="width: 20px;">
+                        <div class="form-check font-size-16">
+                            <input class="form-check-input" id="checkAll" type="checkbox">
+                            <label class="form-check-label" for="checkAll"></label>
+                        </div>
+                    </th>
+                    <th class="align-middle">ID</th>
+                    <th class="align-middle">Sender</th>
+                    <th class="align-middle">Receiver</th>
+                    <th class="align-middle">Amount</th>
+                    <th class="align-middle">Is Completed</th>
+                    <th class="align-middle">Created At</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for objects in objects %}
+                <tr>
+                    <td>
+                        <div class="form-check font-size-16">
+                            <input class="form-check-input" id="orderidcheck01" type="checkbox">
+                            <label class="form-check-label" for="orderidcheck01"></label>
+                        </div>
+                    </td>
+                    <td><a class="text-body fw-bold" href="javascript: void(0);">{{objects.id}}</a></td>
+                    <td>{{objects.sender.username}}</td>
+                    <td>
+                        {{objects.receiver.username}}
+                    </td>
+                    <td>
+                        {{objects.amount}}
+                    </td>
+                    <td>
+                        <span class="badge badge-pill badge-soft-success font-size-12">{{objects.is_completed}}</span>
+                    </td>
+                    <td>
+                        <i class="fab me-1"></i> {{objects.created_on}}
+                    </td>
+
+
+                </tr>
+{% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

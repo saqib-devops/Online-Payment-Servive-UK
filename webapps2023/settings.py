@@ -45,6 +45,8 @@ REST_FRAMEWORK = {
 }
 
 ROOT_URLCONF = 'webapps2023.urls'
+LOGIN_REDIRECT_URL = 'payapp:dashboard'
+LOGOUT_REDIRECT_URL = 'register:signup'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

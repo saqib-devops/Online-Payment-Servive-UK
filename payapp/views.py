@@ -5,8 +5,9 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import ListView, DetailView
 from rest_framework.response import Response
+
+from django.views.generic import ListView, DetailView, TemplateView
 
 from payapp.models import Transaction, TransactionRequest
 from payapp.utils import convert_currency, convert_to_float
@@ -21,8 +22,24 @@ from register.models import User
 """ TRANSACTION VIEWS"""
 
 
+
+@method_decorator(login_required, name='dispatch')
+class DashboardTemplateView(TemplateView):
+    template_name = 'payapp/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(DashboardTemplateView, self).get_context_data(**kwargs)
+        transactions = Transaction.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
+        context['recent_transactions'] = transactions[0:10]
+        context['total_transactions'] = transactions.count()
+        context['total_amount'] = User.objects.get(id=self.request.user.id)
+        return context
+
+
 @method_decorator(login_required, name='dispatch')
 class TransactionListView(ListView):
+    template_name = 'payapp/transactions.html'
+    context_object_name = 'objects'
 
     def get_queryset(self):
         return Transaction.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
@@ -40,7 +57,7 @@ class TransactionDetailView(DetailView):
 
 @method_decorator(login_required, name='dispatch')
 class TransactionCreateView(View):
-    template_name = ''
+    template_name = 'payapp/transaction_create.html'
 
     def get(self, request):
         return render(request, self.template_name)
@@ -91,6 +108,8 @@ class TransactionCreateView(View):
 
 @method_decorator(login_required, name='dispatch')
 class TransactionRequestListView(ListView):
+    template_name = 'payapp/request_transaction_list.html'
+
 
     def get_queryset(self):
         return TransactionRequest.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
@@ -108,7 +127,7 @@ class TransactionRequestDetailView(DetailView):
 
 @method_decorator(login_required, name='dispatch')
 class TransactionRequestCreateView(View):
-    template_name = ''
+    template_name = 'payapp/request_transaction_create.html'
 
     def get(self, request):
         return render(request, self.template_name)

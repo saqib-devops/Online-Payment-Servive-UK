@@ -4,12 +4,14 @@ from .views import (
     TransactionListView, TransactionCreateView,
     TransactionRequestListView, TransactionRequestCreateView, TransactionRequestUpdateView,
     CurrencyConversionAPI
+     DashboardTemplateView
 )
 
 
 app_name = 'payapp'
 urlpatterns = [
 
+    path('dashboard/', DashboardTemplateView.as_view(), name='dashboard'),
     path('transaction/', TransactionListView.as_view(), name='transactions'),
     path('transaction/create/', TransactionCreateView.as_view(), name='transaction-create'),
 

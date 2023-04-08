@@ -8,8 +8,8 @@ from django.db import models
 class User(AbstractUser):
     CURRENCY_TYPE = (
         ('USD', 'USD'),
-        ('GBP', 'GBP'),
-        ('GBP', 'EURO'),
+        ("GBP", 'GBP'),
+        ("EURO", 'EURO'),
     )
     email = models.EmailField(unique=True, max_length=200)
     total_amount = models.FloatField(default=1000)
