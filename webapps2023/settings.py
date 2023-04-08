@@ -5,6 +5,7 @@ SECRET_KEY = 'django-insecure-v5*xes@@f2zwo520!873_6f+2pm61q8x)oao6nvlvk=luna0al
 DEBUG = True
 ALLOWED_HOSTS = []
 ENVIRONMENT = 'local'
+AUTH_USER_MODEL = 'register.User'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -18,6 +19,7 @@ INSTALLED_APPS = [
     # STARTER APPS
     'crispy_forms',
     "crispy_bootstrap5",
+    'rest_framework',
 
     # CUSTOM APPS
     'register.apps.RegisterConfig',
@@ -36,9 +38,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
 
 ROOT_URLCONF = 'webapps2023.urls'
-AUTH_USER_MODEL = 'register.User'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
