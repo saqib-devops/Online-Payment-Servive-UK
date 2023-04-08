@@ -106,12 +106,15 @@ class TransactionCreateView(View):
 
 """ TRANSACTION REQUEST VIEWS"""
 
+
 @method_decorator(login_required, name='dispatch')
 class TransactionRequestListView(ListView):
     template_name = 'payapp/request_transaction_list.html'
 
     def get_queryset(self):
         return TransactionRequest.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
+
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -162,13 +165,12 @@ class TransactionRequestCreateView(View):
 
 @method_decorator(login_required, name='dispatch')
 class TransactionRequestUpdateView(View):
-    template_name = ''
 
-    def post(self, request, pk):
+    def get(self, request, pk):
 
         # IF: no status parameter
         status = request.GET.get('status')
-
+        print(status)
         # IF: get transaction or 404
         transaction_request = get_object_or_404(
             TransactionRequest.objects.filter(receiver=request.user, status='pending'), pk=pk
@@ -176,36 +178,42 @@ class TransactionRequestUpdateView(View):
         sender = transaction_request.receiver
         receiver = transaction_request.sender
         amount = transaction_request.amount
-
+        
         # IF: wrong parameter
         if status not in ['approved', 'cancel']:
             messages.warning(request, "Some parameters are missing")
+            return redirect('payapp:requests')
+            
+        if status == "cancel":
+            transaction_request.status = "cancelled"
+            transaction_request.checked_on = datetime.datetime.now()
+            transaction_request.save()
             return redirect('payapp:requests')
 
         # IF: sender amount is less
         if amount > sender.total_amount:
             messages.warning(request, "In sufficient balance to perform this transaction")
-            return redirect('payapp:requests')
+            return redirect('payapp:requests',)
 
-        if status == 'approved':
+        # ADD: transaction
+        Transaction.objects.create(
+            sender=sender, receiver=receiver, amount=amount
+        )
 
-            # ADD: transaction
-            Transaction.objects.create(
-                sender=sender, receiver=receiver, amount=amount
-            )
+        # ADD: transaction
+        Transaction.objects.create(
+             sender=sender, receiver=receiver, amount=amount
+        )
 
-            # UPDATE: sender and receiver amounts
-            sender.total_amount -= amount
-            sender.save()
-            receiver.total_amount += amount
-            receiver.save()
+        # UPDATE: sender and receiver amounts
+        sender.total_amount -= amount
+        sender.save()
+        receiver.total_amount += amount
+        receiver.save()
 
-            transaction_request.status = 'accepted'
-            messages.success(request, "Request approved and transaction performed successfully")
-        else:
-            transaction_request.status = 'cancelled'
-            messages.success(request, "Request cancelled")
-
+        transaction_request.status = 'accepted'
+        messages.success(request, "Request approved and transaction performed successfully")
+            
         # UPDATE: request
         transaction_request.checked_on = datetime.datetime.now()
         transaction_request.save()
