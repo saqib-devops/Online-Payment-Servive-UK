@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-sm-8 ">
+    <div class="col-sm-6 ">
 
         <div class="card text-center">
-            <h3 class="mt-4 mb-2 text-secondary">Send Transaction</h3>
+            <h3 class="mt-4 mb-4 text-secondary">Send Transaction</h3>
             <form  method="post">
                 {% csrf_token %}
             <div class="form-group row mb-4">
@@ -19,7 +19,7 @@
                     <input class="form-control" id="billing-name" placeholder="Enter your name" name="amount" type="text">
                 </div>
             </div>
-                        <div class=" mb-4 mr-3">
+                        <div class=" mb-4 mr-4">
                          <button type="submit" class="btn btn-success" style="float:right;">
                     Send Amount
                 </button><br>

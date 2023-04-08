@@ -183,6 +183,7 @@
                             <th class="align-middle">Type</th>
                             <th class="align-middle">Status</th>
                             <th class="align-middle">Created</th>
+                            <th class="align-middle">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -233,6 +234,35 @@
                                 <td>
                                     <i class="fab me-1"></i> {{ objects.created_on }}
                                 </td>
+                                                    <td>
+                        {% if objects.receiver == request.user %}
+                        {% if objects.status == "pending" %}
+                        <a href="{% url 'payapp:request-update' objects.id %}?status=approved"><span
+                                class="badge badge-pill badge-soft-success font-size-12">Accept</span></a>
+                        <a href="{% url 'payapp:request-update' objects.id %}?status=cancel"><span
+                                class="badge badge-pill badge-soft-danger font-size-12">Cancel</span></a>
+                        {% elif objects.status == "approved" %}
+                        <a href="#"><span
+                                class="badge badge-pill badge-soft-success font-size-12">{{objects.status}}</span></a>
+                        {% else %}
+                        <a href="#"><span
+                                class="badge badge-pill badge-soft-secondary font-size-12">{{objects.status}}</span></a>
+                        {% endif %}
+                        {% elif objects.sender == request.user %}
+                        {% if objects.status == "pending" %}
+                        <span
+                                class="badge badge-pill badge-soft-primary font-size-12">{{objects.status}}</span>
+                        {% elif objects.status == "approved" %}
+                        <span
+                                class="badge badge-pill badge-soft-success font-size-12">{{objects.status}}</span>
+                        {% else %}
+                        <span
+                                class="badge badge-pill badge-soft-secondary font-size-12">{{objects.status}}</span>
+                        {% endif %}
+                        {% endif %}
+
+                    </td>
+
                             </tr>
                         {% endfor %}
                         </tbody>
