@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
@@ -19,10 +20,6 @@ from rest_framework.status import (
 from register.models import User
 
 
-""" TRANSACTION VIEWS"""
-
-
-
 @method_decorator(login_required, name='dispatch')
 class DashboardTemplateView(TemplateView):
     template_name = 'payapp/dashboard.html'
@@ -34,6 +31,9 @@ class DashboardTemplateView(TemplateView):
         context['total_transactions'] = transactions.count()
         context['total_amount'] = User.objects.get(id=self.request.user.id)
         return context
+
+
+""" TRANSACTION VIEWS"""
 
 
 @method_decorator(login_required, name='dispatch')
@@ -110,7 +110,6 @@ class TransactionCreateView(View):
 class TransactionRequestListView(ListView):
     template_name = 'payapp/request_transaction_list.html'
 
-
     def get_queryset(self):
         return TransactionRequest.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
 
@@ -165,13 +164,6 @@ class TransactionRequestCreateView(View):
 class TransactionRequestUpdateView(View):
     template_name = ''
 
-    def get(self, request, pk):
-        transaction_request = get_object_or_404(
-            TransactionRequest.objects.filter(receiver=request.user, status='pending'), pk=pk
-        )
-
-        return render(request, self.template_name)
-
     def post(self, request, pk):
 
         # IF: no status parameter
@@ -188,31 +180,38 @@ class TransactionRequestUpdateView(View):
         # IF: wrong parameter
         if status not in ['approved', 'cancel']:
             messages.warning(request, "Some parameters are missing")
-            return redirect('payapp:request-update')
+            return redirect('payapp:requests')
 
         # IF: sender amount is less
         if amount > sender.total_amount:
             messages.warning(request, "In sufficient balance to perform this transaction")
-            return redirect('payapp:request-update')
+            return redirect('payapp:requests')
 
-        # ADD: transaction
-        Transaction.objects.create(
-            sender=sender, receiver=receiver, amount=amount
-        )
+        if status == 'approved':
+
+            # ADD: transaction
+            Transaction.objects.create(
+                sender=sender, receiver=receiver, amount=amount
+            )
+
+            # UPDATE: sender and receiver amounts
+            sender.total_amount -= amount
+            sender.save()
+            receiver.total_amount += amount
+            receiver.save()
+
+            transaction_request.status = 'accepted'
+            messages.success(request, "Request approved and transaction performed successfully")
+        else:
+            transaction_request.status = 'cancelled'
+            messages.success(request, "Request cancelled")
 
         # UPDATE: request
-        transaction_request.status = 'accepted'
         transaction_request.checked_on = datetime.datetime.now()
         transaction_request.save()
 
-        # UPDATE: sender and receiver amounts
-        sender.total_amount -= amount
-        sender.save()
-        receiver.total_amount += amount
-        receiver.save()
-
         # SUCCESS: message and redirect
-        messages.success(request, "Request approved and transaction performed successfully")
+
         return redirect('payapp:requests')
 
 

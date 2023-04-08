@@ -48,28 +48,10 @@ class LoginTestCase(TestCase):
     def setUp(self):
         self.credentials = {
             'username': 'testuser',
-            'password': 'secret'
+            'password': 'secret',
+            'email': 'email@email.com'
         }
         User.objects.create_user(**self.credentials)
-
-    def test_login(self):
-        # Login successfully
-        response = self.client.post(reverse('login'), self.credentials, follow=True)
-        self.assertTrue(response.context['user'].is_authenticated)
-        self.assertRedirects(response, reverse('home'))
-
-        # Login with incorrect password
-        self.credentials['password'] = 'wrong_password'
-        response = self.client.post(reverse('login'), self.credentials, follow=True)
-        self.assertFalse(response.context['user'].is_authenticated)
-        self.assertContains(response, "Please enter a correct username and password")
-
-    def test_logout(self):
-        # Logout successfully
-        self.client.login(**self.credentials)
-        response = self.client.post(reverse('logout'), follow=True)
-        self.assertFalse(response.context['user'].is_authenticated)
-        self.assertRedirects(response, reverse('home'))
 
     def test_signup(self):
         # Signup successfully
@@ -79,12 +61,32 @@ class LoginTestCase(TestCase):
             'password1': 'new_secret',
             'password2': 'new_secret',
         }
-        response = self.client.post(reverse('signup'), data, follow=True)
+        response = self.client.post(reverse('register:signup'), data, follow=True)
         self.assertTrue(response.context['user'].is_authenticated)
-        self.assertRedirects(response, reverse('home'))
+        self.assertRedirects(response, reverse('payapp:dashboard'))
 
         # Signup with existing username
         data['username'] = 'testuser'
-        response = self.client.post(reverse('signup'), data, follow=True)
+        response = self.client.post(reverse('register:signup'), data, follow=True)
         self.assertFalse(response.context['user'].is_authenticated)
         self.assertContains(response, "A user with that username already exists.")
+
+
+    def test_login(self):
+        # Login successfully
+        response = self.client.post(reverse('register:login'), self.credentials, follow=True)
+        self.assertTrue(response.context['user'].is_authenticated)
+        self.assertRedirects(response, reverse('payapp:dashboard'))
+
+        # Login with incorrect password
+        self.credentials['password'] = 'wrong_password'
+        response = self.client.post(reverse('register:login'), self.credentials, follow=True)
+        self.assertFalse(response.context['user'].is_authenticated)
+        self.assertContains(response, "Please enter a correct username and password")
+
+    def test_logout(self):
+        # Logout successfully
+        self.client.login(**self.credentials)
+        response = self.client.post(reverse('register:logout'), follow=True)
+        self.assertFalse(response.context['user'].is_authenticated)
+        self.assertRedirects(response, reverse('payapp:dashboard'))
