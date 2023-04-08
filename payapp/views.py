@@ -91,6 +91,8 @@ class TransactionCreateView(View):
 
 
 class TransactionRequestListView(ListView):
+    template_name = 'payapp/request_transaction_list.html'
+
 
     def get_queryset(self):
         return TransactionRequest.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
@@ -106,7 +108,7 @@ class TransactionRequestDetailView(DetailView):
 
 
 class TransactionRequestCreateView(View):
-    template_name = ''
+    template_name = 'payapp/request_transaction_create.html'
 
     def get(self, request):
         return render(request, self.template_name)
