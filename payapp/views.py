@@ -20,6 +20,10 @@ from rest_framework.status import (
 from register.models import User
 
 
+class HomeTemplateView(TemplateView):
+    template_name = 'payapp/home.html'
+
+
 @method_decorator(login_required, name='dispatch')
 class DashboardTemplateView(TemplateView):
     template_name = 'payapp/dashboard.html'
@@ -115,8 +119,6 @@ class TransactionRequestListView(ListView):
         return TransactionRequest.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
 
 
-
-
 @method_decorator(login_required, name='dispatch')
 class TransactionRequestDetailView(DetailView):
 
@@ -178,12 +180,12 @@ class TransactionRequestUpdateView(View):
         sender = transaction_request.receiver
         receiver = transaction_request.sender
         amount = transaction_request.amount
-        
+
         # IF: wrong parameter
         if status not in ['approved', 'cancel']:
             messages.warning(request, "Some parameters are missing")
             return redirect('payapp:requests')
-            
+
         if status == "cancel":
             transaction_request.status = "cancelled"
             transaction_request.checked_on = datetime.datetime.now()
@@ -193,7 +195,7 @@ class TransactionRequestUpdateView(View):
         # IF: sender amount is less
         if amount > sender.total_amount:
             messages.warning(request, "In sufficient balance to perform this transaction")
-            return redirect('payapp:requests',)
+            return redirect('payapp:requests', )
 
         # ADD: transaction
         Transaction.objects.create(
@@ -202,7 +204,7 @@ class TransactionRequestUpdateView(View):
 
         # ADD: transaction
         Transaction.objects.create(
-             sender=sender, receiver=receiver, amount=amount
+            sender=sender, receiver=receiver, amount=amount
         )
 
         # UPDATE: sender and receiver amounts
@@ -213,7 +215,7 @@ class TransactionRequestUpdateView(View):
 
         transaction_request.status = 'accepted'
         messages.success(request, "Request approved and transaction performed successfully")
-            
+
         # UPDATE: request
         transaction_request.checked_on = datetime.datetime.now()
         transaction_request.save()
