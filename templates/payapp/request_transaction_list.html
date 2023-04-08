@@ -17,8 +17,11 @@
                     <th class="align-middle">Receiver</th>
                     <th class="align-middle">Amount</th>
                     <th class="align-middle">Status</th>
-                    <th class="align-middle">Checked At</th>
+                    <th class="align-middle">Sender</th>
+                    <th class="align-middle">Receiver</th>
                     <th class="align-middle">Created At</th>
+                    <th class="align-middle">Checked At</th>
+                    <th class="align-middle">Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -40,11 +43,25 @@
                     </td>
                     <td>
                         {% if objects.status == "pending" %}
-                        <span class="badge badge-pill badge-soft-success font-size-12">{{objects.status}}</span>
+                        <span class="badge badge-pill badge-soft-primary font-size-12">{{objects.status}}</span>
                         {% elif objects.status == "accepted" %}
                         <span class="badge badge-pill badge-soft-success font-size-12">{{objects.status}}</span>
                         {% else %}
-                        <span class="badge badge-pill badge-soft-success font-size-12">{{objects.status}}</span>
+                        <span class="badge badge-pill badge-soft-danger font-size-12">{{objects.status}}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if objects.sender == request.user %}
+                        You
+                        {% else %}
+                        {{objects.sender}}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if objects.receiver == request.user %}
+                        You
+                        {% else %}
+                        <i class="fab me-1"></i> {{objects.receiver}}
                         {% endif %}
                     </td>
                     <td>
@@ -53,7 +70,34 @@
                     <td>
                         <i class="fab me-1"></i> {{objects.checked_on}}
                     </td>
+                    <td>
+                        {% if objects.receiver == request.user %}
+                        {% if objects.status == "pending" %}
+                        <a href="{% url 'payapp:request-update' objects.id %}?status=approved"><span
+                                class="badge badge-pill badge-soft-success font-size-12">Accept</span></a>
+                        <a href="{% url 'payapp:request-update' objects.id %}?status=cancel"><span
+                                class="badge badge-pill badge-soft-danger font-size-12">Cancel</span></a>
+                        {% elif objects.status == "approved" %}
+                        <a href="#"><span
+                                class="badge badge-pill badge-soft-success font-size-12">{{objects.status}}</span></a>
+                        {% else %}
+                        <a href="#"><span
+                                class="badge badge-pill badge-soft-secondary font-size-12">{{objects.status}}</span></a>
+                        {% endif %}
+                        {% elif objects.sender == request.user %}
+                        {% if objects.status == "pending" %}
+                        <span
+                                class="badge badge-pill badge-soft-primary font-size-12">{{objects.status}}</span>
+                        {% elif objects.status == "approved" %}
+                        <span
+                                class="badge badge-pill badge-soft-success font-size-12">{{objects.status}}</span>
+                        {% else %}
+                        <span
+                                class="badge badge-pill badge-soft-secondary font-size-12">{{objects.status}}</span>
+                        {% endif %}
+                        {% endif %}
 
+                    </td>
 
                 </tr>
                 {% endfor %}

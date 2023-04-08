@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
@@ -18,9 +19,7 @@ from rest_framework.status import (
 )
 from register.models import User
 
-
 """ TRANSACTION VIEWS"""
-
 
 
 @method_decorator(login_required, name='dispatch')
@@ -106,13 +105,15 @@ class TransactionCreateView(View):
 
 """ TRANSACTION REQUEST VIEWS"""
 
+
 @method_decorator(login_required, name='dispatch')
 class TransactionRequestListView(ListView):
     template_name = 'payapp/request_transaction_list.html'
 
-
     def get_queryset(self):
         return TransactionRequest.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
+
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -163,20 +164,13 @@ class TransactionRequestCreateView(View):
 
 @method_decorator(login_required, name='dispatch')
 class TransactionRequestUpdateView(View):
-    template_name = ''
+
 
     def get(self, request, pk):
-        transaction_request = get_object_or_404(
-            TransactionRequest.objects.filter(receiver=request.user, status='pending'), pk=pk
-        )
-
-        return render(request, self.template_name)
-
-    def post(self, request, pk):
 
         # IF: no status parameter
         status = request.GET.get('status')
-
+        print(status)
         # IF: get transaction or 404
         transaction_request = get_object_or_404(
             TransactionRequest.objects.filter(receiver=request.user, status='pending'), pk=pk
@@ -184,22 +178,24 @@ class TransactionRequestUpdateView(View):
         sender = transaction_request.receiver
         receiver = transaction_request.sender
         amount = transaction_request.amount
-
+        if status == "cancel":
+            transaction_request.status = "cancelled"
+            transaction_request.save()
+            return redirect('payapp:requests')
         # IF: wrong parameter
         if status not in ['approved', 'cancel']:
             messages.warning(request, "Some parameters are missing")
-            return redirect('payapp:request-update')
+            return redirect('payapp:requests')
 
         # IF: sender amount is less
         if amount > sender.total_amount:
             messages.warning(request, "In sufficient balance to perform this transaction")
-            return redirect('payapp:request-update')
+            return redirect('payapp:requests',)
 
         # ADD: transaction
         Transaction.objects.create(
             sender=sender, receiver=receiver, amount=amount
         )
-
         # UPDATE: request
         transaction_request.status = 'accepted'
         transaction_request.checked_on = datetime.datetime.now()
