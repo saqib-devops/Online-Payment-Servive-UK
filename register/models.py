@@ -7,9 +7,9 @@ from django.db import models
 
 class User(AbstractUser):
     CURRENCY_TYPE = (
-        (1, 'USD'),
-        (2, 'GBP'),
-        (3, 'EURO'),
+        ('USD', 'USD'),
+        ("GBP", 'GBP'),
+        ("EURO", 'EURO'),
     )
     email = models.EmailField(unique=True, max_length=200)
     total_amount = models.FloatField(default=1000)

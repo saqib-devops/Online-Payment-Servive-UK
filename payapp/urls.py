@@ -3,13 +3,14 @@ from django.urls import path
 from .views import (
     TransactionListView, TransactionDetailView,  TransactionCreateView,
     TransactionRequestListView, TransactionRequestCreateView, TransactionRequestUpdateView,
-    TransactionRequestDetailView
+    TransactionRequestDetailView,DashboardTemplateView
 )
 
 
 app_name = 'payapp'
 urlpatterns = [
 
+    path('dashboard/', DashboardTemplateView.as_view(), name='dashboard'),
     path('transaction/', TransactionListView.as_view(), name='transactions'),
     path('transaction/create/', TransactionCreateView.as_view(), name='transaction-create'),
 

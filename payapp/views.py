@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, TemplateView
 
 from payapp.models import Transaction, TransactionRequest
 from register.models import User
@@ -10,7 +10,21 @@ from register.models import User
 """ TRANSACTION VIEWS"""
 
 
+class DashboardTemplateView(TemplateView):
+    template_name = 'payapp/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(DashboardTemplateView, self).get_context_data(**kwargs)
+        transactions = Transaction.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
+        context['recent_transactions'] = transactions[0:10]
+        context['total_transactions'] = transactions.count()
+        context['total_amount'] = User.objects.get(id=self.request.user.id)
+        return context
+
+
 class TransactionListView(ListView):
+    template_name = 'payapp/dashboard.html'
+    context_object_name = 'objects'
 
     def get_queryset(self):
         return Transaction.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))

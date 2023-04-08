@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <div class="d-flex">
+                                                    <div class="flex-shrink-0 me-3">
+                                                        <img src="assets/images/users/avatar-1.jpg" alt="" class="avatar-md rounded-circle img-thumbnail">
+                                                    </div>
+                                                    <div class="flex-grow-1 align-self-center">
+                                                        <div class="text-muted">
+                                                            <p class="mb-2">Welcome to  Dashboard</p>
+                                                            <h5 class="mb-1">{{request.user.username}}</h5>
+                                                            <p class="mb-0">{{request.user.email}}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-4 align-self-center">
+                                                <div class="text-lg-center mt-4 mt-lg-0">
+                                                    <div class="row">
+                                                        <div class="col-4">
+                                                            <div>
+                                                                <p class="text-muted text-truncate mb-2">Total Amount</p>
+                                                                <h5 class="mb-0">{{request.user.total_amount}}</h5>
+                                                                {{request.user.currency_type}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <div>
+                                                                <p class="text-muted text-truncate mb-2">Send Amount</p>
+                                                                <h5 class="mb-0">{{request.user.sent_amount}}</h5>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <div>
+                                                                <p class="text-muted text-truncate mb-2">Total Transactions</p>
+                                                                <h5 class="mb-0">{{total_transactions}}</h5>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <!-- end row -->
+                                    </div>
+                                </div>
+<h3 class="text-center">Recent Transactions</h3>
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table align-middle table-nowrap table-check">
+                <thead class="table-light">
+                <tr>
+                    <th class="align-middle" style="width: 20px;">
+                        <div class="form-check font-size-16">
+                            <input class="form-check-input" id="checkAll" type="checkbox">
+                            <label class="form-check-label" for="checkAll"></label>
+                        </div>
+                    </th>
+                    <th class="align-middle">ID</th>
+                    <th class="align-middle">Sender</th>
+                    <th class="align-middle">Receiver</th>
+                    <th class="align-middle">Amount</th>
+                    <th class="align-middle">Is Completed</th>
+                    <th class="align-middle">Created At</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for objects in recent_transactions %}
+                <tr>
+                    <td>
+                        <div class="form-check font-size-16">
+                            <input class="form-check-input" id="orderidcheck01" type="checkbox">
+                            <label class="form-check-label" for="orderidcheck01"></label>
+                        </div>
+                    </td>
+                    <td><a class="text-body fw-bold" href="javascript: void(0);">{{objects.id}}</a></td>
+                    <td>{{objects.sender.username}}</td>
+                    <td>
+                        {{objects.receiver.username}}
+                    </td>
+                    <td>
+                        {{objects.amount}}
+                    </td>
+                    <td>
+                        <span class="badge badge-pill badge-soft-success font-size-12">{{objects.is_completed}}</span>
+                    </td>
+                    <td>
+                        <i class="fab me-1"></i> {{objects.created_on}}
+                    </td>
+
+
+                </tr>
+{% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

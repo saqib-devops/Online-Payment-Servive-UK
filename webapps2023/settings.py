@@ -38,6 +38,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'webapps2023.urls'
 AUTH_USER_MODEL = 'register.User'
+LOGIN_REDIRECT_URL = 'payapp:dashboard'
+LOGOUT_REDIRECT_URL = 'register:signup'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
