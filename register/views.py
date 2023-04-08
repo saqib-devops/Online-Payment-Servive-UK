@@ -1,19 +1,21 @@
-from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.contrib.auth import login
+from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 
 from register.forms import SignUpForm
 
 
-def signup(request):
-    if request.method == 'POST':
+def register_request(request):
+    if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=user.username, password=raw_password)
             login(request, user)
+            messages.success(request, "Registration successful.")
             return redirect("payapp:dashboard")
-    else:
-        form = SignUpForm()
-    return render(request, 'register/signup.html', {'form': form})
-
+        messages.error(request, "Unsuccessful registration. Invalid information.")
+    form = SignUpForm()
+    return render(request=request, template_name="register/signup.html", context={"form": form})
