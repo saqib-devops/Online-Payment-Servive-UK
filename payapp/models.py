@@ -1,5 +1,6 @@
 from django.db import models
 
+from payapp.utils import convert_currency
 from register.models import User
 
 
@@ -16,6 +17,10 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"Transferred {self.amount} from {self.sender.get_full_name()} to {self.receiver.get_full_name()}"
+
+    def save(self, *args, **kwargs):
+        # self.amount = convert_currency(self.sender.currency_type, self.receiver.currency_type, self.amount)
+        return super(Transaction, self).save(*args, **kwargs)
 
 
 class TransactionRequest(models.Model):

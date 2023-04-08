@@ -27,7 +27,9 @@ class DashboardTemplateView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(DashboardTemplateView, self).get_context_data(**kwargs)
         transactions = Transaction.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
+        requests = TransactionRequest.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
         context['recent_transactions'] = transactions[0:10]
+        context['recent_requests'] = requests[0:10]
         context['total_transactions'] = transactions.count()
         context['total_amount'] = User.objects.get(id=self.request.user.id)
         return context
