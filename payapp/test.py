@@ -148,3 +148,45 @@ class RequestTransactionCreateViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('payapp:requests'))
 
+
+class TransactionRequestUpdateViewTest(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            email='user1@example.com', username="user1", password='password123'
+        )
+        self.user2 = User.objects.create_user(
+            email='user2@example.com', username="user2", password='password123'
+        )
+        self.transaction_request = TransactionRequest.objects.create(
+            sender=self.user1, receiver=self.user2, amount=100, status='pending'
+        )
+
+    def test_transaction_request_update_view_approve(self):
+        url = reverse('payapp:request-update', args=[self.transaction_request.pk])
+        self.client.login(email='user2@example.com', password='password123')
+        response = self.client.get(url, {'status': 'approved'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('payapp:requests'))
+        self.transaction_request.refresh_from_db()
+        self.assertEqual(self.transaction_request.status, 'accepted')
+        self.assertIsNotNone(self.transaction_request.checked_on)
+
+    def test_transaction_request_update_view_cancel(self):
+        url = reverse('payapp:request-update', args=[self.transaction_request.pk])
+        self.client.login(email='user2@example.com', password='password123')
+        response = self.client.get(url, {'status': 'cancel'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('payapp:requests'))
+        self.transaction_request.refresh_from_db()
+        self.assertEqual(self.transaction_request.status, 'cancelled')
+        self.assertIsNotNone(self.transaction_request.checked_on)
+
+    def test_transaction_request_update_view_invalid_status(self):
+        url = reverse('payapp:request-update', args=[self.transaction_request.pk])
+        self.client.login(email='user2@example.com', password='password123')
+        response = self.client.get(url, {'status': 'invalid'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('payapp:requests'))
+        self.transaction_request.refresh_from_db()
+        self.assertEqual(self.transaction_request.status, 'pending')
+        self.assertIsNone(self.transaction_request.checked_on)
