@@ -4,9 +4,6 @@ from django.db import models
 from payapp.utils import convert_currency
 
 
-# Create your models here.
-
-
 class User(AbstractUser):
     CURRENCY_TYPE = (
         ('USD', 'USD'),
@@ -31,5 +28,10 @@ class User(AbstractUser):
             return self.username
 
     def save(self, *args, **kwargs):
+        """
+        On save - user create -- convert (convert 1000 GBP to user selected currency)
+        find code of currencies conversion inside : payapp.utils.convert_currency
+        """
         self.total_amount = convert_currency("GBP", self.currency_type, self.total_amount)
-        super(User, self).save(*args,**kwargs)
+        super(User, self).save(*args, **kwargs)
+

@@ -9,6 +9,10 @@ from register.forms import SignUpForm
 
 
 def register_request(request):
+
+    if request.user.is_authenticated:
+        return redirect("payapp:dashboard")
+
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -19,3 +23,11 @@ def register_request(request):
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = SignUpForm()
     return render(request=request, template_name="register/signup.html", context={"form": form})
+
+
+def cross_auth(request):
+
+    if request.user.is_authenticated:
+        return redirect("payapp:dashboard")
+    else:
+        return redirect("register:login")

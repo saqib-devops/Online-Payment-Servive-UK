@@ -48,7 +48,9 @@ class TransactionListView(ListView):
     context_object_name = 'objects'
 
     def get_queryset(self):
-        return Transaction.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
+        return Transaction.objects.filter(
+            Q(sender=self.request.user) | Q(receiver=self.request.user)
+        )
 
 
 @method_decorator(login_required, name='dispatch')
@@ -99,13 +101,10 @@ class TransactionCreateView(View):
 
         # ADD: transaction
         Transaction.objects.create(sender=sender, receiver=receiver, amount=amount)
-
         receiver.total_amount += float(amount)
         receiver.save()
-
         sender.total_amount -= float(amount)
         sender.save()
-
         messages.success(request, "Amount Transferred successfully.")
         return redirect('payapp:transactions')
 
@@ -118,7 +117,9 @@ class TransactionRequestListView(ListView):
     template_name = 'payapp/request_transaction_list.html'
 
     def get_queryset(self):
-        return TransactionRequest.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
+        return TransactionRequest.objects.filter(
+            Q(sender=self.request.user) | Q(receiver=self.request.user)
+        )
 
 
 @method_decorator(login_required, name='dispatch')
@@ -174,7 +175,7 @@ class TransactionRequestUpdateView(View):
 
         # IF: no status parameter
         status = request.GET.get('status')
-        print(status)
+
         # IF: get transaction or 404
         transaction_request = get_object_or_404(
             TransactionRequest.objects.filter(receiver=request.user, status='pending'), pk=pk
