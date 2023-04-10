@@ -29,15 +29,52 @@ class TransactionViewTest(TestCase):
                                           | Q(receiver=self.user2))
         self.assertTrue(response, tran)
 
-    def test_transaction_create_view(self):
-        url = reverse('payapp:transaction-create')
-        response = self.client.get(url)
 
-        transaction1 = Transaction.objects.create(
-            sender=self.user1, receiver=self.user2, amount=100
+class TransactionCreateViewTest(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            email='user1@example.com',username = "user1", password='password123'
         )
-        transaction2 = Transaction.objects.create(
-            sender=self.user2, receiver=self.user1, amount=170
+        self.user2 = User.objects.create_user(
+            email='user2@example.com', username = "user2",password='password123'
         )
-        self.assertTrue(response, transaction1)
-        self.assertTrue(response, transaction2)
+
+    def test_get(self):
+        self.client.login(email='user1@example.com', password='password123')
+        response = self.client.get(reverse('payapp:transaction-create'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_success(self):
+        self.client.login(email='user1@example.com', password='password123')
+        data = {'email': 'user2@example.com', 'amount': '50'}
+        response = self.client.post(reverse('payapp:transaction-create'), data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('payapp:transactions'))
+
+    def test_post_missing_parameters(self):
+        self.client.login(email='user1@example.com', password='password123')
+        data = {'email': 'user2@example.com'}
+        response = self.client.post(reverse('payapp:transaction-create'), data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('payapp:transaction-create'))
+
+    def test_post_no_receiver(self):
+        self.client.login(email='user1@example.com', password='password123')
+        data = {'email': 'user3@example.com', 'amount': '50'}
+        response = self.client.post(reverse('payapp:transaction-create'), data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('payapp:transaction-create'))
+
+    def test_post_same_user(self):
+        self.client.login(email='user1@example.com', password='password123')
+        data = {'email': 'user1@example.com', 'amount': '50'}
+        response = self.client.post(reverse('payapp:transaction-create'), data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('payapp:transaction-create'))
+
+    def test_post_insufficient_balance(self):
+        self.client.login(email='user1@example.com', password='password123')
+        data = {'email': 'user2@example.com', 'amount': '150'}
+        response = self.client.post(reverse('payapp:transaction-create'), data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('payapp:transactions'))
