@@ -235,10 +235,10 @@ class CurrencyConversionAPI(APIView):
     def get(self, request, currency1, currency2, amount):
 
         # IF: currencies not supported
-        if currency1 not in ['USD', 'EUR', 'GBP'] or currency2 not in ['USD', 'EUR', 'GBP']:
+        if currency1 not in ['USD', 'EURO', 'GBP'] or currency2 not in ['USD', 'EURO', 'GBP']:
             return Response(
                 status=HTTP_400_BAD_REQUEST, data={
-                    'error': 'Only USD, EUR and GBP are supported'
+                    'error': 'Only USD, EURO and GBP are supported'
                 }
             )
 

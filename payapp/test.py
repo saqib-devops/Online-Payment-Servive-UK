@@ -8,6 +8,8 @@ django.setup()
 from django.urls import reverse
 from register.models import User
 from payapp.models import Transaction, TransactionRequest
+from rest_framework.test import APITestCase, APIClient
+from rest_framework import status
 
 
 class TransactionViewTest(TestCase):
@@ -190,3 +192,35 @@ class TransactionRequestUpdateViewTest(TestCase):
         self.transaction_request.refresh_from_db()
         self.assertEqual(self.transaction_request.status, 'pending')
         self.assertIsNone(self.transaction_request.checked_on)
+
+
+class CurrencyConversionAPITestCase(APITestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            email='user2@example.com', username="user1", password='password123'
+        )
+        self.client = APIClient()
+
+    def test_conversion_valid_currencies(self):
+        self.client.login(email='user2@example.com', password='password123')
+        response = self.client.get('/conversion/USD/EURO/100/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['amount'], 83.0)
+
+    def test_currency_not_supported(self):
+        self.client.login(email='user2@example.com', password='password123')
+        response = self.client.get('/conversion/USD/JPY/10/')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json()['error'], 'Only USD, EURO and GBP are supported')
+
+    def test_conversion_invalid_amount(self):
+        self.client.login(email='user2@example.com', password='password123')
+        response = self.client.get('/conversion/USD/EURO/abc/')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], 'Amount must be number (integer, float)')
+
+    def test_conversion_negative_amount(self):
+        self.client.login(email='user2@example.com', password='password123')
+        response = self.client.get('/conversion/USD/EURO/-100/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['error'], 'Amount must be numeric and greater than 0')
