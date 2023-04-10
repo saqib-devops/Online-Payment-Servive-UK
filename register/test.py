@@ -29,4 +29,21 @@ class RegisterViewTest(TestCase):
         self.assertEqual(user.username, 'testuser')
         self.assertEqual(user.currency_type, 'USD')
 
+    def test_invalid_register_view(self):
+        url = reverse('register:signup')
+        # Invalid data: password1 and password2 don't match
+        data = {
+            'username': 'testuser',
+            'email': 'testuser@example.com',
+            'password1': 'testpassword123',
+            'password2': 'testpassword456',
+            'currency_type': 'USD',
+        }
+        response = self.client.post(url, data=data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        with self.assertRaises(User.DoesNotExist):
+            User.objects.get(email='testuser@example.com')
+            print("user does not exist")
+
 
