@@ -71,3 +71,5 @@ class LoginViewTest(TestCase):
         response = self.client.post(self.url, {"username": self.user_email, "password": "invalid_password"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Please enter a correct email and password.")
+
+
