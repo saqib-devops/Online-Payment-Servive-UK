@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from payapp.utils import convert_currency
+
 
 # Create your models here.
 
@@ -16,7 +18,7 @@ class User(AbstractUser):
     sent_amount = models.FloatField(default=0)
     currency_type = models.CharField(max_length=20, choices=CURRENCY_TYPE, default='USD')
 
-    REQUIRED_FIELDS = ['username',]
+    REQUIRED_FIELDS = ['username', ]
     USERNAME_FIELD = 'email'
 
     def __str__(self):
@@ -27,3 +29,7 @@ class User(AbstractUser):
             return f"{self.first_name} {self.last_name}"
         else:
             return self.username
+
+    def save(self, *args, **kwargs):
+        self.total_amount = convert_currency("GBP", self.currency_type, self.total_amount)
+        super(User, self).save(*args,**kwargs)
