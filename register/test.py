@@ -47,3 +47,27 @@ class RegisterViewTest(TestCase):
             print("user does not exist")
 
 
+class LoginViewTest(TestCase):
+
+    def setUp(self):
+        self.user_email = "test@example.com"
+        self.user_password = "password"
+        self.user = User.objects.create_user(
+            email=self.user_email, username=self.user_email, password=self.user_password
+        )
+        self.url = reverse("register:login")
+
+    def test_login_with_email(self):
+        response = self.client.post(self.url, {"username": self.user_email, "password": self.user_password})
+        self.assertRedirects(response, reverse("payapp:dashboard"))
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+
+    def test_login_with_username(self):
+        response = self.client.post(self.url, {"username": self.user.username, "password": self.user_password})
+        self.assertRedirects(response, reverse("payapp:dashboard"))
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+
+    def test_login_with_invalid_credentials(self):
+        response = self.client.post(self.url, {"username": self.user_email, "password": "invalid_password"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Please enter a correct email and password.")
