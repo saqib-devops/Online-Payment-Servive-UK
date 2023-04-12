@@ -20,6 +20,10 @@ from rest_framework.status import (
 from register.models import User
 
 
+class HomeTemplateView(TemplateView):
+    template_name = 'payapp/home.html'
+
+
 @method_decorator(login_required, name='dispatch')
 class DashboardTemplateView(TemplateView):
     template_name = 'payapp/dashboard.html'
@@ -44,7 +48,9 @@ class TransactionListView(ListView):
     context_object_name = 'objects'
 
     def get_queryset(self):
-        return Transaction.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
+        return Transaction.objects.filter(
+            Q(sender=self.request.user) | Q(receiver=self.request.user)
+        )
 
 
 @method_decorator(login_required, name='dispatch')
@@ -95,13 +101,10 @@ class TransactionCreateView(View):
 
         # ADD: transaction
         Transaction.objects.create(sender=sender, receiver=receiver, amount=amount)
-
         receiver.total_amount += float(amount)
         receiver.save()
-
         sender.total_amount -= float(amount)
         sender.save()
-
         messages.success(request, "Amount Transferred successfully.")
         return redirect('payapp:transactions')
 
@@ -114,9 +117,9 @@ class TransactionRequestListView(ListView):
     template_name = 'payapp/request_transaction_list.html'
 
     def get_queryset(self):
-        return TransactionRequest.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
-
-
+        return TransactionRequest.objects.filter(
+            Q(sender=self.request.user) | Q(receiver=self.request.user)
+        )
 
 
 @method_decorator(login_required, name='dispatch')
@@ -172,7 +175,7 @@ class TransactionRequestUpdateView(View):
 
         # IF: no status parameter
         status = request.GET.get('status')
-        print(status)
+
         # IF: get transaction or 404
         transaction_request = get_object_or_404(
             TransactionRequest.objects.filter(receiver=request.user, status='pending'), pk=pk
@@ -180,12 +183,12 @@ class TransactionRequestUpdateView(View):
         sender = transaction_request.receiver
         receiver = transaction_request.sender
         amount = transaction_request.amount
-        
+
         # IF: wrong parameter
         if status not in ['approved', 'cancel']:
             messages.warning(request, "Some parameters are missing")
             return redirect('payapp:requests')
-            
+
         if status == "cancel":
             transaction_request.status = "cancelled"
             transaction_request.checked_on = datetime.datetime.now()
@@ -195,7 +198,7 @@ class TransactionRequestUpdateView(View):
         # IF: sender amount is less
         if amount > sender.total_amount:
             messages.warning(request, "In sufficient balance to perform this transaction")
-            return redirect('payapp:requests',)
+            return redirect('payapp:requests', )
 
         # ADD: transaction
         Transaction.objects.create(
@@ -204,7 +207,7 @@ class TransactionRequestUpdateView(View):
 
         # ADD: transaction
         Transaction.objects.create(
-             sender=sender, receiver=receiver, amount=amount
+            sender=sender, receiver=receiver, amount=amount
         )
 
         # UPDATE: sender and receiver amounts
@@ -215,7 +218,7 @@ class TransactionRequestUpdateView(View):
 
         transaction_request.status = 'accepted'
         messages.success(request, "Request approved and transaction performed successfully")
-            
+
         # UPDATE: request
         transaction_request.checked_on = datetime.datetime.now()
         transaction_request.save()
@@ -233,10 +236,10 @@ class CurrencyConversionAPI(APIView):
     def get(self, request, currency1, currency2, amount):
 
         # IF: currencies not supported
-        if currency1 not in ['USD', 'EUR', 'GBP'] or currency2 not in ['USD', 'EUR', 'GBP']:
+        if currency1 not in ['USD', 'EURO', 'GBP'] or currency2 not in ['USD', 'EURO', 'GBP']:
             return Response(
                 status=HTTP_400_BAD_REQUEST, data={
-                    'error': 'Only USD, EUR and GBP are supported'
+                    'error': 'Only USD, EURO and GBP are supported'
                 }
             )
 

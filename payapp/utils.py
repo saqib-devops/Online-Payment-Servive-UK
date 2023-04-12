@@ -1,3 +1,4 @@
+
 def convert_currency(currency1, currency2, amount):
     # Define conversion rates
     conversion_rates = {
